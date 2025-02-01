@@ -1,4 +1,4 @@
-package com.codeloon.ems.configuration;
+package com.codeloon.ems.configuration.authentication;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

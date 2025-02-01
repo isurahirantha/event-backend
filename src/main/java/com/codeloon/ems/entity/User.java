@@ -12,12 +12,13 @@ import java.util.Set;
 @Data
 @Getter
 @Setter
+@Builder
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", updatable = false, nullable = false, length = 50)
+    private String id;  // Custom unique ID
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
@@ -40,6 +41,9 @@ public class User {
     @Column(name = "account_non_locked", nullable = false)
     private Boolean accountNonLocked = true;
 
+    @Column(name = "force_password_change", nullable = false)
+    private Boolean forcePasswordChange  = true;
+
     @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
@@ -49,4 +53,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private Set<Role> roles;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private UserPersonalData personalData;
 }
