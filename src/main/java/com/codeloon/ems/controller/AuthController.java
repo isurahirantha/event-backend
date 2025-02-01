@@ -35,21 +35,19 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto) {
-        String token = "";
         try {
-            // Receive the token from AuthService
-            token = authService.login(loginDto);
-            return buildResponse(token, DataVarList.SUCCESS_AUTH, DataVarList.AUTH_SUCCESS, HttpStatus.OK);
+            return buildResponse(authService.login(loginDto), DataVarList.SUCCESS_AUTH, DataVarList.AUTH_SUCCESS, HttpStatus.OK);
         } catch (AuthenticationException e) {
             return handleAuthenticationException(e);
         }
     }
 
     private ResponseEntity<AuthResponseDto> buildResponse(String token, String accessMsg, String accessCode, HttpStatus httpStatus) {
-        AuthResponseDto authResponseDto = new AuthResponseDto();
-        authResponseDto.setAccessToken(token);
-        authResponseDto.setAccessCode(accessCode);
-        authResponseDto.setAccessMsg(accessMsg);
+        AuthResponseDto authResponseDto = AuthResponseDto.builder()
+                .accessCode(accessCode)
+                .accessToken(token)
+                .accessMsg(accessMsg)
+                .build();
         return new ResponseEntity<>(authResponseDto, httpStatus);
     }
 
