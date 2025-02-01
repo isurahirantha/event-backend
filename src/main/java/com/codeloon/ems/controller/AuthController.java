@@ -3,6 +3,7 @@ package com.codeloon.ems.controller;
 import com.codeloon.ems.dto.AuthResponseDto;
 import com.codeloon.ems.dto.LoginDto;
 import com.codeloon.ems.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginDto loginDto) {
         return authService.login(loginDto);
     }
 }
