@@ -1,6 +1,6 @@
 package com.codeloon.ems.service;
 
-import com.codeloon.ems.configuration.JwtTokenProvider;
+import com.codeloon.ems.configuration.authentication.JwtTokenProvider;
 import com.codeloon.ems.dto.AuthResponseDto;
 import com.codeloon.ems.dto.LoginDto;
 import com.codeloon.ems.util.DataVarList;

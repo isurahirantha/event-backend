@@ -4,9 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class UserUtils {
-    private UserUtils(){
-        throw new RuntimeException("Cannot initiate util class");
+
+    private UserUtils() {
+        throw new UnsupportedOperationException("UserUtils class cannot be instantiated");
     }
+
     public static String generateCustomUUID(String role, String userName) {
 
         String rolePrefix = switch (role.toUpperCase()) {
@@ -19,10 +21,8 @@ public class UserUtils {
         //userName
         String namePrefix = userName.substring(0,3).toUpperCase();
 
-        // Generate timestamp (YYYYMMDD)
         String timestamp = new SimpleDateFormat("yyMMdd").format(new Date());
 
-        // Generate random 6-character string
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         SecureRandom random = new SecureRandom();
         StringBuilder randomPart = new StringBuilder(3);

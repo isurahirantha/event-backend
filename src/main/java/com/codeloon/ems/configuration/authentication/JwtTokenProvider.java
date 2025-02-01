@@ -1,4 +1,4 @@
-package com.codeloon.ems.configuration;
+package com.codeloon.ems.configuration.authentication;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

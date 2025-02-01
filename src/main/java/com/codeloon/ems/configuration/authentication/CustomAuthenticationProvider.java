@@ -1,4 +1,4 @@
-package com.codeloon.ems.configuration;
+package com.codeloon.ems.configuration.authentication;
 
 import com.codeloon.ems.service.CustomUserDetails;
 import org.springframework.security.authentication.AuthenticationProvider;
