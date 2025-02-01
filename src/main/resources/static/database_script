@@ -27,6 +27,7 @@ CREATE TABLE roles (
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
+
 INSERT INTO roles (name) VALUES
 ('ADMIN'),
 ('EMPLOYEE'),
@@ -49,6 +50,15 @@ INSERT INTO user_roles (user_id, role_id) VALUES
 INSERT INTO user_roles (user_id, role_id) VALUES
 ((SELECT id FROM users WHERE username = 'client'), (SELECT id FROM roles WHERE name = 'CLIENT'));
 
+-- Table: userpersonaldata
+CREATE TABLE userpersonaldata (
+    user_id VARCHAR(36) NOT NULL PRIMARY KEY,
+    position VARCHAR(100) NOT NULL,
+    mobile VARCHAR(100) NOT NULL,
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
 -- Table: event_types
 CREATE TABLE event_types (
@@ -76,15 +86,6 @@ CREATE TABLE inventories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: employees
-CREATE TABLE userpersonaldata (
-    user_id VARCHAR(36) NOT NULL PRIMARY KEY,
-    position VARCHAR(100) NOT NULL,
-    mobile VARCHAR(100) NOT NULL,
-    address TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
 
 -- Table: packages
 CREATE TABLE packages (
@@ -108,16 +109,6 @@ CREATE TABLE package_items (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE,
     FOREIGN KEY (inventory_id) REFERENCES inventories(id) ON DELETE CASCADE
-);
-
--- Table: customers
-CREATE TABLE customers (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    contact_number VARCHAR(15),
-    address TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Table: orders
