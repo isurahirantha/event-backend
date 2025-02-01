@@ -12,13 +12,19 @@ import java.util.Set;
 @Builder
 public class UserBean {
 
-    private Long id;
+    private String id;
 
     private String username;
 
     private String password;
 
     private String email;
+
+    private String position;
+
+    private String address;
+
+    private String mobileNo;
 
     private Boolean enabled = true;
 

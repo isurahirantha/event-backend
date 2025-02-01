@@ -3,7 +3,10 @@ package com.codeloon.ems.configuration;
 
 import com.codeloon.ems.entity.User;
 import com.codeloon.ems.repository.UserRepository;
+import com.codeloon.ems.service.CustomUserDetails;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,10 +19,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Data
+@RequiredArgsConstructor
 public class CustomerUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final CustomUserDetailsChecker customUserDetailsChecker;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -30,12 +35,30 @@ public class CustomerUserDetailsService implements UserDetailsService {
                 .map((roles) -> new SimpleGrantedAuthority(roles.getName()))
                 .collect(Collectors.toSet());
 
-        return new org.springframework.security.core.userdetails.User(
-                username,
+//        return new org.springframework.security.core.userdetails.User(
+//                username,
+//                user.getPassword(),
+//                user.getEnabled(),
+//                user.getAccountNonExpired(),
+//                user.getCredentialsNonExpired(),
+//                user.getAccountNonLocked(),
+//                authorities
+//        );
+
+        CustomUserDetails userDetails = new CustomUserDetails(
+                user.getUsername(),
                 user.getPassword(),
-                authorities
+                user.getEnabled(),
+                user.getAccountNonExpired(),
+                user.getCredentialsNonExpired(),
+                user.getAccountNonLocked(),
+                authorities,
+                user.getForcePasswordChange()
         );
 
+        customUserDetailsChecker.check(userDetails);
+
+        return userDetails;
     }
 
 }

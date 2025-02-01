@@ -1,6 +1,6 @@
 -- Table: users
 CREATE TABLE users (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,  -- Use VARCHAR(36) to store UUID
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
@@ -8,7 +8,17 @@ CREATE TABLE users (
     account_non_expired BOOLEAN NOT NULL DEFAULT TRUE,
     credentials_non_expired BOOLEAN NOT NULL DEFAULT TRUE,
     account_non_locked BOOLEAN NOT NULL DEFAULT TRUE,
+    force_password_change BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: user_roles (Mapping between users and roles)
+CREATE TABLE user_roles (
+    user_id VARCHAR(36) NOT NULL,
+    role_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, role_id)
 );
 
 -- Table: roles
@@ -17,25 +27,15 @@ CREATE TABLE roles (
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Table: user_roles (Mapping between users and roles)
-CREATE TABLE user_roles (
-    user_id BIGINT NOT NULL,
-    role_id BIGINT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, role_id)
-);
-
-
 INSERT INTO roles (name) VALUES
 ('ADMIN'),
 ('EMPLOYEE'),
 ('CLIENT');
 
-INSERT INTO users (username, password, email, enabled, account_non_expired, credentials_non_expired, account_non_locked) VALUES
-('admin', '$2a$12$UT71LwajSuaNYdjScea7t.KJcVRA0CvwIsOPHbbLe8PHjzoGq1tUa', 'admin@example.com', TRUE, TRUE, TRUE, TRUE),
-('employee', '$2a$12$UT71LwajSuaNYdjScea7t.KJcVRA0CvwIsOPHbbLe8PHjzoGq1tUa', 'employee@example.com', TRUE, TRUE, TRUE, TRUE),
-('client', '$2a$12$UT71LwajSuaNYdjScea7t.KJcVRA0CvwIsOPHbbLe8PHjzoGq1tUa', 'client@example.com', TRUE, TRUE, TRUE, TRUE);
+INSERT INTO users (id, username, password, email, enabled, account_non_expired, credentials_non_expired, account_non_locked, force_password_change) VALUES
+('A001', 'admin', '$2a$12$UT71LwajSuaNYdjScea7t.KJcVRA0CvwIsOPHbbLe8PHjzoGq1tUa', 'admin@example.com', TRUE, TRUE, TRUE, TRUE, FALSE),
+('E001', 'employee', '$2a$12$UT71LwajSuaNYdjScea7t.KJcVRA0CvwIsOPHbbLe8PHjzoGq1tUa', 'employee@example.com', TRUE, TRUE, TRUE, TRUE,FALSE),
+('C001', 'client', '$2a$12$UT71LwajSuaNYdjScea7t.KJcVRA0CvwIsOPHbbLe8PHjzoGq1tUa', 'client@example.com', TRUE, TRUE, TRUE, TRUE, FALSE);
 
 -- Assign the ADMIN role to the first user
 INSERT INTO user_roles (user_id, role_id) VALUES
@@ -77,10 +77,11 @@ CREATE TABLE inventories (
 );
 
 -- Table: employees
-CREATE TABLE employees (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
+CREATE TABLE userpersonaldata (
+    user_id VARCHAR(36) NOT NULL PRIMARY KEY,
     position VARCHAR(100) NOT NULL,
+    mobile VARCHAR(100) NOT NULL,
+    address TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

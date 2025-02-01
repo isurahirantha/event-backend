@@ -3,10 +3,12 @@ package com.codeloon.ems.controller;
 import com.codeloon.ems.dto.AuthResponseDto;
 import com.codeloon.ems.dto.LoginDto;
 import com.codeloon.ems.service.AuthService;
+import com.codeloon.ems.util.DataVarList;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,21 +19,54 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    // Build Login REST API
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto) {
+        String token = "";
+        try {
+            // Receive the token from AuthService
+            token = authService.login(loginDto);
+            return buildResponse(token, DataVarList.SUCCESS_AUTH, DataVarList.AUTH_SUCCESS, HttpStatus.OK);
+        } catch (AuthenticationException e) {
+            return handleAuthenticationException(e);
+        }
+    }
 
-        //01 - Receive the token from AuthService
-        String token = authService.login(loginDto);
-
-        //02 - Set the token as a response using JwtAuthResponse Dto class
+    private ResponseEntity<AuthResponseDto> buildResponse(String token, String accessMsg, String accessCode, HttpStatus httpStatus) {
         AuthResponseDto authResponseDto = new AuthResponseDto();
         authResponseDto.setAccessToken(token);
+        authResponseDto.setAccessCode(accessCode);
+        authResponseDto.setAccessMsg(accessMsg);
+        return new ResponseEntity<>(authResponseDto, httpStatus);
+    }
 
-        //03 - Return the response to the user
-        return new ResponseEntity<>(authResponseDto, HttpStatus.OK);
+    private ResponseEntity<AuthResponseDto> handleAuthenticationException(AuthenticationException e) {
+        String accessMsg = "";
+        String accessCode = DataVarList.AUTH_FAILED_ACCOUNT_ISSUE;
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+
+        if (e instanceof DisabledException) {
+            accessMsg = DataVarList.FAILED_AUTH_ACC_BLOCKED;
+            httpStatus = HttpStatus.FORBIDDEN;
+        } else if (e instanceof LockedException) {
+            accessMsg = DataVarList.FAILED_AUTH_ACC_LOCKED;
+            httpStatus = HttpStatus.FORBIDDEN;
+        } else if (e instanceof AccountExpiredException) {
+            accessMsg = DataVarList.FAILED_AUTH_ACC_EXPIRED;
+            httpStatus = HttpStatus.FORBIDDEN;
+        } else if (e instanceof CredentialsExpiredException) {
+            CredentialsExpiredException cee = (CredentialsExpiredException) e;
+            accessMsg = cee.getMessage().toLowerCase().contains("before")
+                    ? DataVarList.FAILED_AUTH_CRED_EXPIRED
+                    : DataVarList.FAILED_AUTH_FIRST_LOGIN;
+            accessCode = DataVarList.AUTH_FAILED_RESET_PASSWORD;
+            httpStatus = HttpStatus.FORBIDDEN;
+        } else if (e instanceof BadCredentialsException) {
+            accessMsg = DataVarList.FAILED_AUTH_ACC_INVALIED;
+            httpStatus = HttpStatus.UNAUTHORIZED;
+        }
+
+        return buildResponse("", accessMsg, accessCode, httpStatus);
     }
 }
