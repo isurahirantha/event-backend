@@ -6,12 +6,25 @@ spring:
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
 
+# Cross-Origin Resource Sharing configurations
+cors:
+  uris:
+    - http://localhost:9999
+    - http://172.0.0.1:9999
+  methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
 
 logging:
   level:
