@@ -4,7 +4,6 @@ import com.codeloon.ems.dto.UserDto;
 import com.codeloon.ems.entity.Role;
 import com.codeloon.ems.entity.User;
 import com.codeloon.ems.entity.UserPersonalData;
-import com.codeloon.ems.model.UserBean;
 import com.codeloon.ems.repository.RolesRepository;
 import com.codeloon.ems.repository.UserPersonalDataRepository;
 import com.codeloon.ems.repository.UserRepository;
@@ -16,7 +15,6 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final RolesRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserPersonalDataRepository personalDataRepository;
+    private final EntityManager entityManager;
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -55,9 +54,6 @@ public class UserServiceImpl implements UserService {
         }
         return userBeans;
     }
-
-    @Autowired
-    EntityManager entityManager;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -79,7 +75,7 @@ public class UserServiceImpl implements UserService {
                         .accountNonExpired(true)
                         .credentialsNonExpired(true)
                         .accountNonLocked(true)
-                        .forcePasswordChange(userRole.equalsIgnoreCase(DataVarList.ROLE_CLIENT) ? false : true)
+                        .forcePasswordChange(!userRole.equalsIgnoreCase(DataVarList.ROLE_CLIENT))
                         .createdAt(LocalDateTime.now())
                         .build();
 
@@ -109,8 +105,8 @@ public class UserServiceImpl implements UserService {
                 msg = "Username already exist.";
             }
         } catch (Exception ex) {
-            log.error("Error occurred while retrieving system user", ex);
-            msg = "Error occurred while retrieving system user.";
+            log.error("Error occurred while creating system user", ex);
+            msg = "Error occurred while creating system user.";
         } finally {
             responseBean.setResponseMsg(msg);
             responseBean.setResponseCode(code);
