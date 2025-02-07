@@ -1,19 +1,22 @@
 package com.codeloon.ems.service;
 
 import com.codeloon.ems.dto.InventoryDto;
+import com.codeloon.ems.dto.UserDto;
+import com.codeloon.ems.model.DataTableBean;
 import com.codeloon.ems.util.ResponseBean;
 
 import java.util.List;
 
 public interface InventoryService {
-    public List<InventoryDto> getAllInventory();
+    List<InventoryDto> getAllInventory();
 
-    public ResponseBean getInventoryByName(String name);
+    DataTableBean getInventoryByName(String name, int page, int size);
 
-    public ResponseBean getInventoryById(Long userId);
+    ResponseBean createInventory(InventoryDto inventory);
 
-    public ResponseBean createInventory(InventoryDto inventory);
+    ResponseBean updateInventory(InventoryDto inventory);
 
-    public ResponseBean updateInventory(InventoryDto inventory);
-    public ResponseBean deleteInventory(Long inventoryId);
+    ResponseBean deleteInventory(Long inventoryId);
+
+    ResponseBean createInventory(String userRole, InventoryDto inventory);
 }

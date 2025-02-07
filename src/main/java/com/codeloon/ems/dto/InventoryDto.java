@@ -22,8 +22,9 @@ public class InventoryDto {
     private Integer orderQuantity;
     private Integer salesQuantity;
     private Integer balanceQuantity;
-    private String barcode;
+    private String startBarcode;
+    private String endBarcode;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private User CreatedUser;
+    private User createdUser;
 }

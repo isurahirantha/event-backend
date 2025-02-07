@@ -20,29 +20,32 @@ public class Inventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "item_name", nullable = false)
     private String itemName;
 
-    @Column(nullable = false)
+    @Column(name = "is_refundable", nullable = false)
     private Boolean isRefundable;
 
-    @Column(nullable = false)
+    @Column(name = "purchase_price",nullable = false)
     private Long purchasePrice;
 
-    @Column(nullable = false)
+    @Column(name = "sales_price",nullable = false)
     private Long salesPrice;
 
-    @Column(nullable = false)
+    @Column(name = "order_qty", nullable = false)
     private Integer orderQuantity;
 
-    @Column(nullable = false)
+    @Column(name = "sales_qty", nullable = false)
     private Integer salesQuantity;
 
-    @Column(nullable = false)
+    @Column(name = "balance_qty", nullable = false)
     private Integer balanceQuantity;
 
-    @Column
-    private String barcode;
+    @Column(name = "start_Barcode")
+    private String startBarcode;
+
+    @Column(name = "end_Barcode")
+    private String endBarcode;
 
     @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
@@ -50,7 +53,7 @@ public class Inventory {
     @Column(name = "updated_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
 
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "created_user", nullable = false)
-//    private User CreatedUser;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "created_user", referencedColumnName = "username", nullable = false)
+    private User createdUser;
 }

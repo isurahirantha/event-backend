@@ -1,6 +1,8 @@
 package com.codeloon.ems.controller;
 
 import com.codeloon.ems.dto.InventoryDto;
+import com.codeloon.ems.dto.UserDto;
+import com.codeloon.ems.model.DataTableBean;
 import com.codeloon.ems.service.InventoryService;
 import com.codeloon.ems.util.ResponseBean;
 import jakarta.validation.Valid;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,20 +28,16 @@ public class InventoryController {
         return ResponseEntity.ok(inventory);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getInventoryById(@PathVariable Long id) {
-        ResponseBean responseBean = inventoryService.getInventoryById(id);
-        return ResponseEntity.ok(responseBean);
-    }
-
     @GetMapping("/{name}")
-    public ResponseEntity<?> getInventoryByName(@PathVariable String name) {
+    public ResponseEntity<?> getInventoryByName(@PathVariable String name, @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
         ResponseEntity<?> responseEntity;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ResponseBean responseBean = new ResponseBean();
         try {
-            responseBean = inventoryService.getInventoryByName(name);
+            DataTableBean dataTableBean = inventoryService.getInventoryByName(name, page, size);
             httpStatus = HttpStatus.CREATED;
+            responseBean.setContent(dataTableBean);
         } catch (Exception ex) {
             log.error("Error occurred while retrieving inventory.{} ", ex.getMessage());
         } finally {
@@ -79,7 +78,7 @@ public class InventoryController {
         return responseEntity;
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{inventoryId}")
     public ResponseEntity<?> deleteInventory(@PathVariable Long inventoryId) {
         return ResponseEntity.ok(inventoryService.deleteInventory(inventoryId));
     }
