@@ -1,7 +1,7 @@
 package com.codeloon.ems.service;
 
 import com.codeloon.ems.configuration.authentication.JwtTokenProvider;
-import com.codeloon.ems.dto.AuthResponseDto;
+import com.codeloon.ems.model.AuthResponse;
 import com.codeloon.ems.dto.LoginDto;
 import com.codeloon.ems.util.DataVarList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    public ResponseEntity<AuthResponseDto> login(LoginDto loginDto) {
+    public ResponseEntity<AuthResponse> login(LoginDto loginDto) {
         String token = "";
         try {
             // 01 - AuthenticationManager is used to authenticate the user
@@ -46,8 +46,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    private ResponseEntity<AuthResponseDto> buildResponse(String token, String authMsg, String authStatus, HttpStatus httpStatus) {
-        AuthResponseDto authResponseDto = AuthResponseDto.builder()
+    private ResponseEntity<AuthResponse> buildResponse(String token, String authMsg, String authStatus, HttpStatus httpStatus) {
+        AuthResponse authResponseDto = AuthResponse.builder()
                 .accessCode(authStatus)
                 .accessToken(token)
                 .accessMsg(authMsg)
@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
         return new ResponseEntity<>(authResponseDto, httpStatus);
     }
 
-    private ResponseEntity<AuthResponseDto> handleAuthenticationException(AuthenticationException e) {
+    private ResponseEntity<AuthResponse> handleAuthenticationException(AuthenticationException e) {
         String accessMsg = "";
         String accessCode = DataVarList.AUTH_FAILED_ACCOUNT_ISSUE;
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
